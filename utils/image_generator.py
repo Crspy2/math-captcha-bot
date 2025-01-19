@@ -70,13 +70,6 @@ class ImageGenerator:
 
     async def create_problem_image(self, pattern_file: str, problem_text: str) -> io.BytesIO:
         try:
-            try:
-                question_font = ImageFont.truetype('Arial', 16)
-                noise_font = ImageFont.truetype('Arial', 64)
-            except:
-                question_font = ImageFont.load_default()
-                noise_font = ImageFont.load_default()
-
             pattern_image = Image.open(os.path.join('img', pattern_file))
             pattern_image = pattern_image.convert('RGB')
             pattern_image = pattern_image.resize((360, 360))
@@ -87,11 +80,30 @@ class ImageGenerator:
             combined_image = combined_image.convert('RGBA')
             draw = ImageDraw.Draw(combined_image)
 
+            try:
+                question_font = ImageFont.truetype('Arial', 16)
+                noise_font = ImageFont.truetype('Arial', 32)
+            except:
+                question_font = ImageFont.load_default()
+                noise_font = ImageFont.load_default()
+
+            lines = problem_text.split('\n')
+            for i, line in enumerate(lines):
+                y_pos = 380 + (i * 25)
+                draw.text(
+                    (10, y_pos),
+                    line,
+                    fill='black',
+                    font=question_font,
+                    stroke_width=0.125,
+                    stroke_fill='black',
+                )
+
             chars = ''.join(chr(i) for i in range(32, 127))
-            for _ in range(50):
+            for _ in range(125):
+
                 x = random.randint(0, combined_image.width - 1)
                 y = random.randint(0, combined_image.height - 1)
-
                 noise_text = random.choice(chars)
                 if random.random() < 0.3:
                     noise_text += random.choice(chars)
@@ -106,17 +118,6 @@ class ImageGenerator:
                     font=noise_font
                 )
                 combined_image = Image.alpha_composite(combined_image, noise_layer)
-
-            lines = problem_text.split('\n')
-            for i, line in enumerate(lines):
-                y_pos = 380 + (i * 25)
-                for dx, dy in [(0, 0), (1, 0), (0, 1), (1, 1)]:
-                    draw.text(
-                        (10 + dx, y_pos + dy),
-                        line,
-                        fill='black',
-                        font=question_font
-                    )
 
             buffer = io.BytesIO()
             combined_image.save(buffer, format='PNG')
