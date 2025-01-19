@@ -26,10 +26,8 @@ class ImageGenerator:
         pattern_file = random.choice(list(self.raven_patterns.keys()))
         pattern_answer = self.raven_patterns[pattern_file]
 
-        # Generate polynomial coefficients
         coefficients = [random.randint(0, 20) for _ in range(random.randint(3, 4))]
 
-        # Create polynomial expression
         terms = []
         for i, coef in enumerate(reversed(coefficients)):
             if coef != 0:
@@ -41,7 +39,6 @@ class ImageGenerator:
                     terms.append(f"{coef}x^{i}")
         polynomial = " + ".join(reversed(terms))
 
-        # Calculate derivatives and final answer
         derivative_order = random.randint(1, 3)
         current_coefficients = coefficients.copy()
 
@@ -105,7 +102,7 @@ class ImageGenerator:
                 noise_draw.text(
                     (x, y),
                     noise_text,
-                    fill=(200, 80, 0, 90),  # RGBA with alpha for opacity
+                    fill=(200, 80, 0, 90),
                     font=noise_font
                 )
                 combined_image = Image.alpha_composite(combined_image, noise_layer)
