@@ -1,3 +1,6 @@
+import asyncio
+import time
+
 import discord
 from discord.ui import Button, View
 import logging
@@ -47,7 +50,7 @@ class VerifyButton(Button):
 
         embed = discord.Embed(
             title="Verification Challenge",
-            description="Please solve the mathematical problem below.",
+            description=f"Please solve the mathematical problem below. The captcha challenge expires <t:{int(time.time() + 10 * 60)}:R>",
             color=self.cog.bot.config.success_color
         )
         embed.add_field(
@@ -55,7 +58,7 @@ class VerifyButton(Button):
             value="1. Look at the pattern image\n2. Solve the mathematical equation\n3. Click 'Submit Answer' and enter your solution"
         )
 
-        verify_view = View(timeout=300)
+        verify_view = View(timeout=600)
         submit_button = Button(
             label="Submit Answer",
             style=discord.ButtonStyle.green,
@@ -102,6 +105,14 @@ class VerifyButton(Button):
             view=verify_view,
             ephemeral=True
         )
+
+        await asyncio.sleep(60 * 10)
+        submit_button.disabled = True
+        await interaction.edit_original_response(
+            embed=embed,
+            view=verify_view,
+        )
+
 
 class VerifyHelpButton(Button):
     def __init__(self, cog):

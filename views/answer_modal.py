@@ -15,7 +15,7 @@ class AnswerModal(Modal, title='Verification Answer'):
     )
 
     def __init__(self, cog, verification_data: VerificationData):
-        super().__init__(timeout=300)
+        super().__init__(timeout=600)
         self.cog = cog
         self.verification_data = verification_data
 
